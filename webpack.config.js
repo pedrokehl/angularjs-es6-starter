@@ -35,6 +35,13 @@ const extractSass = new ExtractTextPlugin({
   disable: !isProd
 });
 
+const uglify = new webpack.optimize.UglifyJsPlugin({
+  output: {
+    comments: false
+  },
+  disable: !isProd
+});
+
 const htmlPlugin = new HtmlWebpackPlugin({
   template: './src/public/index.html',
   inject: 'body',
@@ -43,7 +50,7 @@ const htmlPlugin = new HtmlWebpackPlugin({
 
 const defaultOutput = {
   path: __dirname + '/dist',
-  publicPath: isProd ? '/' : 'http://localhost:8080/',
+  publicPath: isProd ? './' : 'http://localhost:8080/',
 
   // Filename for entry points
   // Only adds hash in build mode
@@ -80,7 +87,8 @@ module.exports = {
           test: /\.scss$/,
           use: extractSass.extract({
             use: [{
-              loader: "css-loader"
+              loader: "css-loader",
+              options: {minimize: true}
             }, {
               loader: "sass-loader"
             }],
@@ -102,6 +110,7 @@ module.exports = {
   },
   plugins: [
     extractSass,
+    uglify,
     htmlPlugin,
     ... isProd ? prodPlugins : []
   ],
